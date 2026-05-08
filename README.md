@@ -152,3 +152,7 @@ To test the MCP Server using the Inspector console:
 1. Open `http://127.0.0.1:6274` in your browser
 2. Navigate to the **Configuration** section
 3. Enter the **Session token** in the **Proxy Session Token** field
+
+
+Swagger
+http://127.0.0.1:8000/docs#/inference/predict_predict_post

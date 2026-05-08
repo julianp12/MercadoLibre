@@ -1,4 +1,4 @@
-from boston_housing.application import app
+from src.boston_housing.application import app
 
 def main():
     app.start_server()

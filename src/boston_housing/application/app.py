@@ -1,46 +1,22 @@
-import logging
-from contextlib import asynccontextmanager
+import uvicorn
+from fastapi import FastAPI
 
-from mcp.server import FastMCP
+from src.boston_housing.infrastructure.entry_points.routes import bind_routes
 
-from boston_housing.application.config.container import Container
-from boston_housing.infrastructure.entry_points import (
-    routes,
-    prompts,
-    resources,
-    tools
-)
 
-logger = logging.getLogger(__name__)
-
-@asynccontextmanager
-async def lifespan(fastmcp: FastMCP):
-    """
-    Context manager to manage IoC and lifespan of the application.
-    """
-    container = Container()
-    container.wire(modules=[
-        tools,
-        resources,
-        prompts
-        ]
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title="Boston Housing API",
+        version="1.0.0",
+        description="API REST para inferencia de precios de viviendas usando Boston Housing.",
     )
+    bind_routes(app)
+    return app
 
-    tools.bind_tools(fastmcp)
-    resources.bind_resources(fastmcp)
-    prompts.bind_prompts(fastmcp)
 
-    yield
+app = create_app()
 
-def start_server() -> int:
-    print("Starting MCP server...")
-    routes.bind_routes(mcp)
-    logger.info("MCP server starting...")
-    try:
-        mcp.run(transport='streamable-http', mount_path="/mcp")
-    except Exception as e:
-        print("Exception in mcp.run():", e)
+
+def start_server(host: str = "127.0.0.1", port: int = 8000) -> int:
+    uvicorn.run(app, host=host, port=port)
     return 0
-
-mcp = FastMCP("research", lifespan=lifespan)
-#app = mcp
