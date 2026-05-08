@@ -1,0 +1,57 @@
+
+1
+ 
+Ejercicio Técnico: Puesta en Producción de un 
+Modelo ML con Pipeline y API REST 
+Contexto 
+Una startup ha recolectado datos históricos de viviendas y busca ofrecer predicciones de 
+precios como servicio accesible mediante una API RESTful. Como Ingeniero/a MLOps, 
+deberás implementar el pipeline de entrenamiento, despliegue y endpoint de inferencia. 
+ 
+Alcance y Restricciones 
+Se espera una solución agnóstica, NO acoplada a servicios gestionados de ninguna 
+nube. Por tanto: 
+●  Procura no usar herramientas gestionadas como AWS SageMaker, Google AI 
+Platform, Azure ML ni herramientas propietarias equivalentes de otras nubes. 
+●  El stack debe estar basado en tecnologías open-source y/o self-hosted, de manera 
+que el sistema resulte portable e independiente del proveedor de infraestructura. 
+●  Puedes usar Docker, Python, herramientas open-source (FastAPI, Flask, MLflow 
+open-source, DVC, etc.), pero no despliegues ni dependas de servicios específicos 
+de AWS, GCP, Azure, etc. 
+ 
+Problema 
+1. Preparación y Entrenamiento 
+●  Limpieza y selección del dataset Boston Housing (versión open-source). 
+●  Implementación de pipeline reproducible: preprocesamiento, entrenamiento (modelo 
+base de regresión), evaluación y persistencia del modelo. 
+●  El pipeline debe ser ejecutable y automatizable mediante scripts. 
+2. Despliegue del Modelo 
+●  Servir el modelo mediante una API RESTful (/predict), usando FastAPI, Flask, 
+Django u otro stack open-source. 
+●  La API debe cargar el modelo persistido y responder a peticiones HTTP con 
+inferencias. 
+1 
+ 
+3. Infraestructura y MLOps 
+●  Scripts para entrenamiento y despliegue. 
+●  Versionado de código y artefactos en Git, con buenas prácticas y estructura clara. 
+●  (Bonus) Pipeline CI/CD simple (ej. GitHub Actions) para validación automática o 
+despliegue. 
+4. Características del modelo en producción. 
+ 
+●  Monitoreo básico del modelo en producción. 
+●  Posibilidad de reentrenamiento dada la necesidad. 
+ 
+5. Entregables 
+●  Código fuente en repositorio, con estructura modular y documentada. 
+●  Dockerfile y ejemplos de uso. 
+●  README con instrucciones, dependencias, ejecución, y explicación de posibles 
+mejoras. 
+●  Presentación (20 minutos el día de la entrevista) donde justifiques y expliques las 
+principales decisiones técnicas tomadas en el diseño del pipeline, selección del 
+modelo, stack tecnológico, empaquetado, seguridad, escalabilidad, versionado y 
+extensibilidad. Se valora la claridad, justificación y visión estratégica. 
+●  Breve apartado en README explicando el uso de herramientas AI, si aplica. 
+Tiempo estimado: 6-8 horas. 
+ 
+2 

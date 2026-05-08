@@ -1,0 +1,19 @@
+{
+  "version": "20260508_114959",
+  "model_type": "Ridge",
+  "features": [
+    "rm",
+    "lstat",
+    "ptratio",
+    "dis",
+    "nox",
+    "crim",
+    "tax",
+    "age"
+  ],
+  "metrics": {
+    "rmse": 3.554261413426175,
+    "mae": 2.626316244429889,
+    "r2": 0.6850896298462932
+  }
+}
