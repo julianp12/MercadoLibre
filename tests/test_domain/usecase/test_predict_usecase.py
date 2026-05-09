@@ -15,3 +15,7 @@ def test_predict_use_case_with_mock_model():
     assert prediction == [11.0, 21.0, 31.0]
     mock_model.scale_features.assert_called_once_with(features)
     mock_model.predict.assert_called_once_with([10.0, 20.0, 30.0])
+    
+    
+    
+    
