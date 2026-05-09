@@ -38,7 +38,7 @@ MarkupSafe==3.0.3
 mcp==1.12.3
 mdurl==0.1.2
 more-itertools==11.0.2
-numpy==2.4.4
+numpy
 openapi-core==0.23.1
 openapi-pydantic==0.5.1
 openapi-schema-validator==0.8.1
