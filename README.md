@@ -78,6 +78,8 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente:
 * **Requirements**: Paquetes de python, instalarlos con pip install -r requerimientos.txt`.
 * **crear runer en GitHub**: ![alt text](image.png)
 * **Docker & Docker Compose**: Necesarios para ejecutar el stack completo (API + MLflow) de forma aislada.
+
+## Dockerfile y ejemplos de uso. 
 * **Levantar dokcerr compose**: docker compose -f deployment/docker-compose.yml up --build**
 
 
