@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.10.2
+    container_name: mlflow_server
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow_data:/mlflow # Guarda tus modelos y métricas aquí
+    command: mlflow server --host 0.0.0.0
+
+  api:
+    build: .
+    container_name: boston_housing_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mlflow
