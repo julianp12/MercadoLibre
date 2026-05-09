@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import List, Tuple
-from src.boston_housing.domain.model.housing.housing import Housing
+from boston_housing.domain.model.housing.housing import Housing
 
 class PreprocessUseCase:
     """

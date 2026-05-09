@@ -2,8 +2,8 @@ from dependency_injector.wiring import inject, Provide
 
 from mcp.server.fastmcp import FastMCP
 
-from boston_housing.application.config.container import Container
-from boston_housing.domain.usecase.prompt_usecase import PromptUseCase
+from src.boston_housing.application.config.container import Container
+from src.boston_housing.domain.usecase.prompt_usecase import PromptUseCase
 
 @inject
 def bind_prompts(mcp: FastMCP,
