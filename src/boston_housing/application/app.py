@@ -17,6 +17,6 @@ def create_app() -> FastAPI:
 app = create_app()
 
 
-def start_server(host: str = "127.0.0.1", port: int = 8000) -> int:
+def start_server(host: str = "0.0.0.0", port: int = 8000) -> int:
     uvicorn.run(app, host=host, port=port)
     return 0
