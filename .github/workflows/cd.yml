@@ -7,16 +7,15 @@ on:
 jobs:
   deploy:
     name: Despliegue en mi computadora
-    runs-on: self-hosted  # <--- Esto le dice que use tu PC, no la nube
-    
+    runs-on: self-hosted
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
 
       - name: Levantar Stack con Docker Compose
         run: |
-          # Esto construye la API y levanta MLflow localmente
-          docker-compose up -d --build
+          # Usamos -f para apuntar al archivo que está dentro de la carpeta deployment
+          docker compose -f deployment/docker-compose.yml up -d --build
           
       - name: Verificar Contenedores
         run: docker ps

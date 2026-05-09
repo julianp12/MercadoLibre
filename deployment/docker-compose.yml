@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.11'
 services:
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.10.2
@@ -6,11 +6,13 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./mlflow_data:/mlflow # Guarda tus modelos y métricas aquí
+      - ./mlflow_data:/mlflow
     command: mlflow server --host 0.0.0.0
 
   api:
-    build: .
+    build:
+      context: ..  # <--- Esto le dice que suba un nivel para encontrar el código
+      dockerfile: deployment/Dockerfile
     container_name: boston_housing_api
     ports:
       - "8000:8000"
