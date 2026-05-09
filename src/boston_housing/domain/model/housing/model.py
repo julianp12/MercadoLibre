@@ -13,7 +13,7 @@ class Model:
         self.metrics = model_info["metrics"]
         
         # Reconstruir el modelo (en este caso, Ridge)
-        self.model = Ridge()  # Puedes ajustar esto según el tipo de modelo
+        self.model = Ridge()  # Ajustar esegún el tipo de modelo
         self.scaler = StandardScaler()  # Escalador (ajústalo si es necesario)
 
     def scale_features(self, features):

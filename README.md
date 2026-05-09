@@ -1,26 +1,26 @@
-# Example Arxiv papers MCP Server
+# MercadoLibre - Boston Housing Prediction Service
 
 ## Overview
 
-This is an MCP (Model Context Protocol) Server designed to provide AI assistants with access to arXiv academic papers. The server implements a clean architecture pattern with dependency injection and follows domain-driven design principles.
+Este proyecto es una solución integral de Machine Learning para la predicción de precios de viviendas (Boston Housing), diseñada bajo los estándares de **Clean Architecture** y principios de **MLOps**. El sistema proporciona una API de inferencia escalable y un pipeline de entrenamiento automatizado con seguimiento detallado de experimentos.
 
 ## Key Features
 
-The server provides three main MCP capabilities:
+🚀 **Servicio de Inferencia**
+* API REST de alto rendimiento construida con **FastAPI**.
+* Validación estricta de datos de entrada (features) mediante **Pydantic**.
+* Soporte flexible para recibir características tanto en formato de diccionario como de lista.
 
-🔧 Tools
+🧪 **MLOps & Experimentación**
+* Rastreo de experimentos (métricas RMSE, MAE, R²) y registro de modelos mediante **MLflow**.
+* Pipeline de entrenamiento persistente que genera artefactos versionados automáticamente.
+* Carga dinámica y automática del modelo más reciente ("latest") en caliente.
 
-* search_papers - Search for academic papers on arXiv by topic and store their metadata
-* extract_info - Retrieve detailed information about specific papers by ID
-
-📚 Resources
-
-* papers://folders - List all available research topic directories
-* papers://{topic} - Get comprehensive information about papers in a specific topic
-
-💬 Prompts
-
-* generate_search_prompt - Generate structured prompts for AI assistants to research academic topics
+🏗️ **Arquitectura y DevOps**
+* Estricta separación de capas siguiendo **Clean Architecture** (Dominio, Aplicación, Infraestructura).
+* Orquestación completa del stack (API + MLflow) mediante **Docker Compose**.
+* CI/CD automatizado con GitHub Actions y Runners locales.
+* Monitoreo mediante MLflow Tracking Server.
 
 ## Architecture
 
@@ -107,4 +107,5 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente:
 6. swagger 
     - http://localhost:8000/apidocs/
 7. Levanta docker compose : docker compose -f deployment/docker-compose.yml up --build
+8. UI MLflow : http://localhost:5000/
     
