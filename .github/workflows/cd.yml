@@ -15,7 +15,7 @@ jobs:
       - name: Levantar Stack con Docker Compose
         run: |
           # Usamos -f para apuntar al archivo que está dentro de la carpeta deployment
-          docker-compose -f deployment/docker-compose.yml up -d --build
+          docker compose -f deployment/docker-compose.yml up -d --build
           
       - name: Verificar Contenedores
         run: docker ps
