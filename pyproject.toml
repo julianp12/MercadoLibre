@@ -30,7 +30,6 @@ build-backend = "hatchling.build"
 
 [tool.coverage.run]
 omit = [
-    "*/bancolombia/*",
     "*/tests/*",
     "/notebooks/*"
 ]
