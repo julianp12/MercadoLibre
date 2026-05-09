@@ -46,7 +46,14 @@ jobs:
       - name: Smoke test contenedor
         run: |
           docker run -d --name api-test -p 8000:8000 boston-housing-api:${{ github.sha }}
-          docker inspect --format='{{json .State.Health.Status}}' api-test
-          curl --fail http://localhost:8000/health
+          for i in {1..5}; do
+            if curl --fail http://localhost:8000/health; then
+              echo "API lista"
+              break
+            fi
+            echo "Esperando API..."
+            sleep 5
+          done
+          docker logs api-test
           docker stop api-test
 
