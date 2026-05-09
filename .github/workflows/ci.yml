@@ -46,6 +46,7 @@ jobs:
       - name: Smoke test contenedor
         run: |
           docker run -d --name api-test -p 8000:8000 boston-housing-api:${{ github.sha }}
-          sleep 5
+          docker inspect --format='{{json .State.Health.Status}}' api-test
           curl --fail http://localhost:8000/health
           docker stop api-test
+
