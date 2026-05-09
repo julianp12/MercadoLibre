@@ -2,7 +2,7 @@ version: '3.11'
 
 services:
   mlflow:
-    image: ghcr.io/mlflow/mlflow:v2.10.2
+    image: ghcr.io/mlflow/mlflow:v3.12.0 
     container_name: mlflow_server
     ports:
       - "5000:5000"
