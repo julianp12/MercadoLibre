@@ -1,0 +1,35 @@
+name: CD - Deployment
+
+on:
+  push:
+    branches: [main, trunk]
+
+jobs:
+  deploy:
+    name: Continuous Deployment (Agnóstico)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Despliegue en Servidor Self-Hosted via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # 1. Preparar carpeta y código
+            if [ ! -d "~/boston-housing-api" ]; then
+              git clone https://github.com{{ github.repository }}.git ~/boston-housing-api
+            fi
+            cd ~/boston-housing-api
+            git pull origin ${{ github.ref_name }}
+
+            # 2. Reconstrucción local (Agnóstico)
+            docker build -f deployment/Dockerfile -t boston-api:latest .
+
+            # 3. Despliegue
+            docker stop boston-api || true
+            docker rm boston-api || true
+            docker run -d --name boston-api -p 8000:8000 boston-api:latest

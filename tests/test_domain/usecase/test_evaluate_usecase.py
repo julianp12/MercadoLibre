@@ -37,3 +37,6 @@ def test_execute_returns_metrics(sample_data):
     assert pytest.approx(metrics["rmse"], 0.01) == 0.0
     assert pytest.approx(metrics["mae"], 0.01) == 0.0
     assert pytest.approx(metrics["r2"], 0.01) == 1.0
+
+
+
