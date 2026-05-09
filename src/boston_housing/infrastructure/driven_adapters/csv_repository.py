@@ -6,62 +6,51 @@ from boston_housing.domain.model.housing.gateway.housing_repository import Housi
 
 class CsvHousingRepository(HousingRepository):
     """
-    Adaptador concreto: Carga Boston Housing desde OpenML (open-source).
-    
-    Responsabilidades:
-        - Descargar dataset desde OpenML si no existe localmente
-        - Leer CSV y mapear columnas a entidades
-        - Proporcionar datos en formato Housing o DataFrame
+    Adaptador concreto: Carga Boston Housing únicamente desde archivos locales.
+    Eliminada la dependencia de OpenML/Kaggle para garantizar estabilidad.
     """
-
-    OPENML_URL = "https://www.openml.org/data/get_csv/531/boston_corrected.arff"
-
+    
     COLUMN_MAPPING = {
         "CRIM": "crim", "ZN": "zn", "INDUS": "indus", "CHAS": "chas",
         "NOX": "nox", "RM": "rm", "AGE": "age", "DIS": "dis",
-        "RAD": "rad", "TAX": "tax", "PTRATIO": "ptratio",
-        "B": "b", "LSTAT": "lstat", "MEDV": "price"
+        "RAD": "rad", "TAX": "tax", "PTRATIO": "ptratio", "B": "b",
+        "LSTAT": "lstat", "MEDV": "price"
     }
 
     def __init__(self, raw_path: str = "data/raw/boston_housing.csv"):
+        # Priorizamos la carpeta raw, pero daremos flexibilidad en la carga
         self.raw_path = raw_path
-
-    def download(self) -> pd.DataFrame:
-        """Descarga el dataset desde OpenML y lo guarda localmente."""
-        dirpath = os.path.dirname(self.raw_path)
-        if dirpath:
-            os.makedirs(dirpath, exist_ok=True)
-        print("📥 Descargando dataset desde OpenML...")
-        df = pd.read_csv(self.OPENML_URL)
-        cols = [c for c in self.COLUMN_MAPPING if c in df.columns]
-        df = df[cols].rename(columns=self.COLUMN_MAPPING)
-        df.to_csv(self.raw_path, index=False)
-        print(f"✅ Guardado en: {self.raw_path} → {len(df)} registros")
-        return df
 
     def load(self) -> List[Housing]:
         """
-        Carga dataset y lo mapea a entidades Housing.
-        - Si el CSV existe localmente → lo carga directamente
-        - Si no existe → descarga desde OpenML
+        Carga dataset y lo mapea a entidades Housing buscando en rutas locales.
         """
-        if not os.path.exists(self.raw_path):
-            df = self.download()
-        else:
+        # 1. Intentar cargar desde la ruta configurada (data/raw/boston_housing.csv)
+        if os.path.exists(self.raw_path):
             print(f"📂 Cargando desde: {self.raw_path}")
             df = pd.read_csv(self.raw_path)
+        
+        # 2. Backup: Buscar en la raíz de data por si el archivo se llama distinto
+        elif os.path.exists("data/HousingData.csv"):
+            print("📂 Cargando desde backup local: data/HousingData.csv")
+            df = pd.read_csv("data/HousingData.csv")
+        
+        else:
+            raise FileNotFoundError(
+                f"❌ No se encontró el dataset local en {self.raw_path} ni en data/HousingData.csv. "
+                "Asegúrate de copiar el archivo al contenedor."
+            )
 
-        # Renombrar columnas si vienen en mayúsculas (CSV original)
-        df.columns = [self.COLUMN_MAPPING.get(c, c.lower()) for c in df.columns]
-
-        # Mantener solo columnas conocidas
+        # Normalización de columnas (Mayúsculas a minúsculas según el mapping)
+        df.columns = [self.COLUMN_MAPPING.get(c.upper(), c.lower()) for c in df.columns]
+        
+        # Mantener solo columnas conocidas para evitar errores de mapeo
         known_cols = list(self.COLUMN_MAPPING.values())
         df = df[[c for c in known_cols if c in df.columns]]
 
         return [Housing(**row) for row in df.to_dict(orient="records")]
 
     def load_as_dataframe(self) -> pd.DataFrame:
-        """Carga dataset como DataFrame (útil para análisis)."""
-        if not os.path.exists(self.raw_path):
-            return self.download()
-        return pd.read_csv(self.raw_path)
+        """Carga dataset como DataFrame para el pipeline de entrenamiento."""
+        records = self.load()
+        return pd.DataFrame([r.__dict__ for r in records])
