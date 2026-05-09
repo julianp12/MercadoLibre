@@ -1,4 +1,5 @@
 version: '3.11'
+
 services:
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.10.2
@@ -7,14 +8,31 @@ services:
       - "5000:5000"
     volumes:
       - ./mlflow_data:/mlflow
-    command: mlflow server --host 0.0.0.0
+    command: mlflow server --backend-store-uri /mlflow --host 0.0.0.0 --port 5000
+
+  # Este servicio ejecuta el reentrenamiento y se detiene al terminar
+  trainer:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    container_name: boston_housing_trainer
+    depends_on:
+      - mlflow
+    environment:
+      - PYTHONPATH=/app/src
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    command: python /app/src/boston_housing/infrastructure/entry_points/run_pipeline.py
 
   api:
     build:
-      context: ..  # <--- Esto le dice que suba un nivel para encontrar el código
+      context: ..
       dockerfile: deployment/Dockerfile
     container_name: boston_housing_api
     ports:
       - "8000:8000"
     depends_on:
       - mlflow
+      - trainer # La API espera a que el entrenamiento termine
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - MODEL_NAME=BostonHousing_Prod
