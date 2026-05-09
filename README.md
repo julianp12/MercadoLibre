@@ -112,4 +112,7 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente:
 
 ## Pipeline CI/CD
 ![alt text](image-1.png)
+
+## monitoreo
+![alt text](image-2.png)
     
