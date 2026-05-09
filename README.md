@@ -27,132 +27,82 @@ The server provides three main MCP capabilities:
 The project follows Clean Architecture principles with clear separation of concerns:
 
 ```ini
-📁 src
-├── 📁 mcp_server_papers
-│   ├─ 📁 domain
-│   │   ├── 📁 model
-│   │   │   └── 📁 paper
-│   │   │       └── 📁 gateway: Abstract repositories for tools, resources, and prompts
-│   │   │           ├── 📄 paper_repository.py
-│   │   │           ├── 📄 resource_repository.py
-│   │   │           └── 📄 prompt_repository.py
-│   │   └── 📁 usecase: Business logic for tools, resources, and prompts
-│   │       ├── 📄 paper_usecase.py
-│   │       ├── 📄 resource_usecase
-│   │       └── 📄 prompt_usecase.py
-├── 📁 infrastructure
-│   ├── 📁 entry_points: MCP server bindings for tools, resources, prompts, and routes
-│   │   ├── 📄 tools.py
-│   │   ├── 📄 resources.py
-│   │   ├── 📄 prompts.py
-│   │   └── 📄 routes.py
-│   ├── 📁 driven_adapters: arXiv API integration and file system operations
-│   │   ├── 📁 prompts
-│   │   |   └── 📄 papers.py
-│   │   ├── 📁 local_files
-│   │   |   └── 📄 local_papers.py
-│   │   └── 📁 http_client
-│   │       └── 📄 arxiv_papers.py
-├── 📁 application: FastMCP server configuration with dependency injection
-│    ├── 📄 app.py
-│    └── 📁 config
-│        ├── 📄 config.py
-│        └── 📄 container.py
-└─── 📄 server.py: Call app.py to start or initialize MCP server
+📁 MercadoLibre/
+├── 📂 .github/workflows/        # Automatización CI/CD
+│   ├── 📄 ci.yml                # Tests, cobertura y construcción de imagen Docker
+│   └── 📄 cd.yml                # Despliegue continuo mediante Docker Compose
+├── 📂 data/                     # Almacenamiento de datos (Versionado local)
+│   ├── 📂 raw/                  # Dataset original (boston_housing.csv)
+│   └── 📂 processed/            # Datos limpios tras Fase 1 (boston_clean.csv)
+├── 📂 deployment/               # Archivos de infraestructura agnóstica
+│   ├── 📄 Dockerfile            # Empaquetado de la API FastAPI
+│   └── 📄 docker-compose.yml    # Orquestación de API + MLflow Tracking Server
+├── 📂 models/                   # Artefactos del modelo
+│   ├── 📄 latest.txt            # Puntero al nombre del archivo .joblib más reciente
+│   └── 📄 model_*.joblib        # Modelos entrenados y persistidos
+├── 📂 src/boston_housing/       # Código fuente principal
+│   ├── 📂 application/          # Capa de Orquestación
+│   │   ├── 📄 app.py            # Punto de entrada de la aplicación FastAPI
+│   │   └── 📂 config/           # Contenedor de Inyección de Dependencias
+│   ├── 📂 domain/               # Capa de Lógica de Negocio (Pura)
+│   │   ├── 📂 model/            # Entidades de dominio (Housing)
+│   │   ├── 📂 model/gateway/    # Interfaces de repositorios (Abstracciones)
+│   │   └── 📂 usecase/          # Casos de uso (Preprocess, Train, Evaluate)
+│   └── 📂 infrastructure/       # Capa de Adaptadores e Implementaciones
+│       ├── 📂 driven_adapters/  # Persistencia de modelos y repositorios CSV
+│       └── 📂 entry_points/     # API Routes, CLI Scripts (run_pipeline, etc.)
+├── 📂 tests/                    # Pruebas unitarias con Pytest
+├── 📄 HousingData.csv           # Dataset raw para pruebas rápidas
+├── 📄 pyproject.toml            # Configuración de dependencias (uv/hatchling)
+├── 📄 uv.lock                   # Lockfile de dependencias para reproducibilidad
+├── 📄 main.py                   # Punto de entrada principal
+└── 📄 README.md                 # Documentación del proyecto
 ```
 
 ## Technology Stack
 
-* Framework: FastMCP for [MCP](https://modelcontextprotocol.io/introduction) server implementation
-* Dependencies: [Dependency Injector](https://python-dependency-injector.ets-labs.org/) for IoC container
-* External API: [arXiv](https://info.arxiv.org/help/api/index.html) API for paper search and retrieval
-* Storage: Local JSON files in arXiv-papers/ directory
-* Testing: Comprehensive test suite with pytest and async support
+* **Lenguaje & Gestor**: [Python 3.13](https://www.python.org/) + [uv](https://docs.astral.sh/uv/) (Package Management).
+* **Machine Learning**: [Scikit-learn](https://scikit-learn.org/) (Ridge Regression & Pipelines), [Pandas](https://pandas.pydata.org/), [NumPy](https://numpy.org/).
+* **MLOps**: [MLflow](https://mlflow.org/) (Experiment Tracking & Model Registry).
+* **API Framework**: [FastAPI](https://fastapi.tiangolo.com/) + [Pydantic v2](https://docs.pydantic.dev/) para validación de datos.
+* **Arquitectura**: Clean Architecture con Inyección de Dependencias ([Dependency Injector](https://python-dependency-injector.ets-labs.org/)).
+* **DevOps & CI/CD**: [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) y [GitHub Actions](https://github.com/features/actions) Y  GitHub Actions Runners.
+* **Persistencia**: [Joblib](https://joblib.readthedocs.io/) para modelos y almacenamiento local para datasets CSV.
+* **Testing**: [Pytest](https://docs.pytest.org/) con soporte para pruebas asíncronas y reportes de cobertura.
 
 ## Prerequisites
 
-- Install uv from [Astral](https://docs.astral.sh/uv/getting-started/installation/) or the [GitHub README](https://github.com/astral-sh/uv#installation)
-- Run: `uv python install` to install python version from file `.python-version`
+Antes de comenzar, asegúrate de tener instalado lo siguiente:
+
+* **Python 3.11+**: Versión base del proyecto. Puedes instalarla fácilmente ejecutando `uv python install`.
+* **Requirements**: Paquetes de python, instalarlos con pip install -r requerimientos.txt`.
+* **crear runer en GitHub**: ![alt text](image.png)
+* **Docker & Docker Compose**: Necesarios para ejecutar el stack completo (API + MLflow) de forma aislada.
+* **Levantar dokcerr compose**: docker compose -f deployment/docker-compose.yml up --build**
+
+
 
 ## Local development
-
-To make changes to this MCP locally and run it:
-
-```sh
-uv venv
-source .venv/bin/activate
-uv sync
-```
-
-If you need to add or remove a dependency run :
-
-`uv add [OPTIONS] <PACKAGES|--requirements <REQUIREMENTS>>`
-
-`uv remove [OPTIONS] <PACKAGES>...`
-
-Examples:
-
-```sh
-uv add "arxiv>=2.2.0"
-uv remove "arxiv==2.2.0"
-
-```
-
-After update dependencies, you must generate or update the `uv.lock` file. It works `package.lock` from node, where lock the dependency versions to avoid conflicts. Run the following command to generate or update lock:
-
-```sh
-uv lock
-```
-
-Run Unit Tests with Pytest
-
-```sh
-uv run pytest
-```
-
-Run Coverage with html report
-
-```sh
-uv run coverage html
-```
-
-A report will be generated into `htmlcov` folder. Open file `htmlcov/index.html` with a browser to visualize the report.
-
-Run MCP Server
-
-```sh
-uv run mcp-server-papers
-```
-
-To test the MCP Server, run the [Inspector](https://modelcontextprotocol.io/docs/tools/inspector#inspector) tool created by Anthropic.
-
-⚠️ Note: You must install node version 22 or newer
-
-```sh
-npx @modelcontextprotocol/inspector
-```
-
-When you run the **Inspector**, it shows something like:
-
-```sh
-Starting MCP inspector...
-⚙️ Proxy server listening on 127.0.0.1:6277
-🔑 Session token: e35f9b0215e837b2058eab71a0d571a7855f0bee97670f806400eac40f612062
-Use this token to authenticate requests or set DANGEROUSLY_OMIT_AUTH=true to disable auth
-
-🔗 Open inspector with token pre-filled:
-   http://localhost:6274/?MCP_PROXY_AUTH_TOKEN=e35f9b0215e837b2058eab71a0d571a7855f0bee97670f806400eac40f612062
-   (Auto-open is disabled when authentication is enabled)
-
-🔍 MCP Inspector is up and running at http://127.0.0.1:6274
-```
-
-To test the MCP Server using the Inspector console:
-
-1. Open `http://127.0.0.1:6274` in your browser
-2. Navigate to the **Configuration** section
-3. Enter the **Session token** in the **Proxy Session Token** field
-
-
-Swagger
-http://127.0.0.1:8000/docs#/inference/predict_predict_post
+1. python main.py
+2. python src\boston_housing\infrastructure\entry_points\run_pipeline.py
+3. http://127.0.0.1:8000/health
+4. curl postman inferencia
+    curl --location 'http://127.0.0.1:8000/predict' \
+    --header 'Content-Type: application/json' \
+    --data '{
+        "features": [
+            6.575,
+            4.98,
+            15.3,
+            4.09,
+            0.538,
+            0.00632,
+            296,
+            65.2
+        ]
+    }'
+5. iniciar runners: ./run.cmd
+6. swagger 
+    - http://localhost:8000/apidocs/
+7. Levanta docker compose : docker compose -f deployment/docker-compose.yml up --build
+    
