@@ -108,4 +108,8 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente:
     - http://localhost:8000/apidocs/
 7. Levanta docker compose : docker compose -f deployment/docker-compose.yml up --build
 8. UI MLflow : http://localhost:5000/
+
+
+## Pipeline CI/CD
+![alt text](image-1.png)
     
