@@ -8,8 +8,6 @@ jobs:
   deploy:
     name: Continuous Deployment (Agnóstico)
     runs-on: ubuntu-latest
-    # Nota: Si este es un archivo aparte del de CI, quita la línea 'needs: docker' 
-    # a menos que ambos jobs estén en el mismo archivo.
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
