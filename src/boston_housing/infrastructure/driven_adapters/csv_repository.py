@@ -20,34 +20,32 @@ class CsvHousingRepository(HousingRepository):
     def __init__(self, raw_path: str = "data/raw/boston_housing.csv"):
         # Priorizamos la carpeta raw, pero daremos flexibilidad en la carga
         self.raw_path = raw_path
-
     def load(self) -> List[Housing]:
-        """
-        Carga dataset y lo mapea a entidades Housing buscando en rutas locales.
-        """
-        # 1. Intentar cargar desde la ruta configurada (data/raw/boston_housing.csv)
-        if os.path.exists(self.raw_path):
-            print(f"📂 Cargando desde: {self.raw_path}")
-            df = pd.read_csv(self.raw_path)
+        # Rutas posibles dentro del contenedor y local
+        possible_paths = [
+            self.raw_path,                  # data/raw/boston_housing.csv
+            "HousingData.csv",              # Raíz del proyecto
+            "/app/HousingData.csv",         # Raíz en Docker
+            "data/HousingData.csv"          # Carpeta data
+        ]
         
-        # 2. Backup: Buscar en la raíz de data por si el archivo se llama distinto
-        elif os.path.exists("data/HousingData.csv"):
-            print("📂 Cargando desde backup local: data/HousingData.csv")
-            df = pd.read_csv("data/HousingData.csv")
+        df = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                print(f"📂 Dataset encontrado en: {path}")
+                df = pd.read_csv(path)
+                break
         
-        else:
+        if df is None:
             raise FileNotFoundError(
-                f"❌ No se encontró el dataset local en {self.raw_path} ni en data/HousingData.csv. "
-                "Asegúrate de copiar el archivo al contenedor."
+                f"❌ No se encontró el dataset. Rutas intentadas: {possible_paths}. "
+                "Verifica que el archivo esté en la raíz de tu proyecto."
             )
 
-        # Normalización de columnas (Mayúsculas a minúsculas según el mapping)
+        # Normalización (igual que antes)
         df.columns = [self.COLUMN_MAPPING.get(c.upper(), c.lower()) for c in df.columns]
-        
-        # Mantener solo columnas conocidas para evitar errores de mapeo
         known_cols = list(self.COLUMN_MAPPING.values())
         df = df[[c for c in known_cols if c in df.columns]]
-
         return [Housing(**row) for row in df.to_dict(orient="records")]
 
     def load_as_dataframe(self) -> pd.DataFrame:

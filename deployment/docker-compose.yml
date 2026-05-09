@@ -2,13 +2,21 @@ version: '3.11'
 
 services:
   mlflow:
-    image: ghcr.io/mlflow/mlflow:v3.12.0 
+    image: ghcr.io/mlflow/mlflow:v3.12.0
     container_name: mlflow_server
     ports:
       - "5000:5000"
     volumes:
       - ./mlflow_data:/mlflow
-    command: mlflow server --backend-store-uri /mlflow --host 0.0.0.0 --port 5000
+    environment:
+      # Configuración de hosts permitidos para evitar el error 403
+      - MLFLOW_SERVER_ALLOWED_HOSTS=*
+    command: >
+      mlflow server 
+      --backend-store-uri /mlflow 
+      --host 0.0.0.0 
+      --port 5000 
+      --allowed-hosts *
 
   # Este servicio ejecuta el reentrenamiento y se detiene al terminar
   trainer:
@@ -16,10 +24,13 @@ services:
       context: ..
       dockerfile: deployment/Dockerfile
     container_name: boston_housing_trainer
+    volumes:
+      - ..:/app
     depends_on:
       - mlflow
     environment:
       - PYTHONPATH=/app/src
+      # El trainer se conecta al servicio 'mlflow'
       - MLFLOW_TRACKING_URI=http://mlflow:5000
     command: python /app/src/boston_housing/infrastructure/entry_points/run_pipeline.py
 
@@ -32,7 +43,7 @@ services:
       - "8000:8000"
     depends_on:
       - mlflow
-      - trainer # La API espera a que el entrenamiento termine
+      - trainer
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
       - MODEL_NAME=BostonHousing_Prod
