@@ -1,14 +1,9 @@
-# main.py
-import sys
-import os
+from src.boston_housing.application.app import start_server
 
-# Agrega la carpeta 'src' al PYTHONPATH
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
-
-from src.boston_housing.application import app
 def main():
-    app.start_server()
+    print("Iniciando servidor FastAPI...")
+    start_server()
 
 if __name__ == "__main__":
+    print("Ejecutando main.py...")
     main()
-

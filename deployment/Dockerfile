@@ -1,34 +1,36 @@
-FROM #{artifactory-python-image}# as base
-LABEL maintainer="ia@bancolombia.onmicrosoft.com" description="Microservicio MCP Server scaffold"
-RUN apt-get update && apt-get install -y build-essential
-
-FROM base as with_deps
-COPY requirements.txt requirements.txt
-RUN apt-get update && apt-get install -y build-essential curl tar
-RUN pip install -r requirements.txt -i https://artifactory.apps.bancolombia.com/api/pypi/pypi-bancolombia/simple --trusted-host artifactory.apps.bancolombia.com
-
-RUN apt-get remove --purge cups* -y && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN python -m pip uninstall pip -y
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-RUN #{python-run-post-commands}#
-
-
-FROM with_deps
-EXPOSE #{container-port}#
-
-
-
-USER appuser
+# ── Stage 1: dependencias ────────────────────────────────────────────────────
+FROM python:3.13-slim AS builder
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# ── Stage 2: imagen final ─────────────────────────────────────────────────────
+FROM python:3.13-slim AS runtime
+
+WORKDIR /app
+
+# Copiar dependencias instaladas desde el builder
+COPY --from=builder /usr/local/lib/python3.13 /usr/local/lib/python3.13
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copiar código fuente y modelo persistido
 COPY src src
+COPY models models
 COPY main.py main.py
 
-ENV PYTHONPATH=/app/src
-# ENV SSL_CERT_FILE=#{docker-certificates-path}#
+ENV PYTHONPATH=/app
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-CMD #{worker-params}#
+EXPOSE 8000
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
 
-HEALTHCHECK NONE
+CMD ["python", "main.py"]
