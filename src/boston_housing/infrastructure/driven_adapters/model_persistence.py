@@ -32,7 +32,8 @@ class ModelPersistence:
             Ruta al archivo .joblib guardado
         """
         version = version or datetime.now().strftime("%Y%m%d_%H%M%S")
-        model_path  = os.path.join(self.models_dir, f"model_{version}.joblib")
+        model_filename = f"model_{version}.joblib"
+        model_path  = os.path.join(self.models_dir, model_filename)
         meta_path   = os.path.join(self.models_dir, f"model_{version}.json")
         latest_path = os.path.join(self.models_dir, "latest.txt")
 
@@ -51,7 +52,7 @@ class ModelPersistence:
 
         # Actualizar puntero a latest
         with open(latest_path, "w") as f:
-            f.write(model_path)
+            f.write(model_filename)
 
         print(f"  ✅ Modelo  → {model_path}")
         print(f"  ✅ Métricas → {meta_path}")
@@ -63,8 +64,13 @@ class ModelPersistence:
         if not os.path.exists(latest_path):
             raise FileNotFoundError("No hay modelos guardados. Ejecuta train primero.")
         with open(latest_path) as f:
-            model_path = f.read().strip()
-        return joblib.load(model_path)
+            stored_path = f.read().strip()
+
+        # Extraer solo el nombre del archivo para evitar conflictos de separadores (Windows vs Linux)
+        # El replace asegura que podamos manejar rutas antiguas que aún tengan backslashes
+        filename = os.path.basename(stored_path.replace("\\", "/"))
+        full_path = os.path.join(self.models_dir, filename)
+        return joblib.load(full_path)
 
     def load(self, model_path: str) -> Pipeline:
         """Carga un modelo específico por ruta."""
