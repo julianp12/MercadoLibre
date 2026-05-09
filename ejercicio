@@ -25,18 +25,22 @@ Problema
 ●  Implementación de pipeline reproducible: preprocesamiento, entrenamiento (modelo 
 base de regresión), evaluación y persistencia del modelo. 
 ●  El pipeline debe ser ejecutable y automatizable mediante scripts. 
+
+
 2. Despliegue del Modelo 
 ●  Servir el modelo mediante una API RESTful (/predict), usando FastAPI, Flask, 
 Django u otro stack open-source. 
 ●  La API debe cargar el modelo persistido y responder a peticiones HTTP con 
 inferencias. 
-1 
+
  
 3. Infraestructura y MLOps 
 ●  Scripts para entrenamiento y despliegue. 
 ●  Versionado de código y artefactos en Git, con buenas prácticas y estructura clara. 
 ●  (Bonus) Pipeline CI/CD simple (ej. GitHub Actions) para validación automática o 
 despliegue. 
+
+
 4. Características del modelo en producción. 
  
 ●  Monitoreo básico del modelo en producción. 
