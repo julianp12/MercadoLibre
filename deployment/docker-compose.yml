@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./mlflow_data:/mlflow
+      - ./mlflow_data:/app/mlflow_data
     environment:
       # Configuración de hosts permitidos para evitar el error 403
       - MLFLOW_SERVER_ALLOWED_HOSTS=*
