@@ -1,5 +1,7 @@
 import sys
 import os
+# Silenciar advertencias de Git antes de iniciar MLflow
+os.environ["GIT_PYTHON_REFRESH"] = "quiet"
 from pathlib import Path
 import pandas as pd
 import mlflow
@@ -61,7 +63,8 @@ def train_model():
         mlflow.sklearn.log_model(
             sk_model=pipeline,
             artifact_path="model",
-            registered_model_name="BostonHousing_Prod" # <--- CLAVE PARA REENTRENAMIENTO
+            registered_model_name="BostonHousing_Prod",
+            pip_requirements=["scikit-learn", "pandas", "joblib"]
         )
 
         print(f"\n✅ Fase 2 completada.")
